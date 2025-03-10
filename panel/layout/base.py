@@ -640,44 +640,10 @@ class NamedListLike(param.Parameterized):
 
     def __setitem__(self, index: int | slice, panes: Iterable[Any]) -> None:
         new_objects = list(self)
-        name = type(self).__name__
         if not isinstance(index, slice):
-            if index > len(self.objects):
-                raise IndexError(
-                    f'Index {index} out of bounds on {name} '
-                    f'containing {len(self.objects)} objects.'
-                )
-            start, end = index, index+1
-            panes = [panes]
+            new_objects[index], self._names[index] = self._to_object_and_name(panes)
         else:
-            start = index.start or 0
-            end = len(self.objects) if index.stop is None else index.stop
-            if index.start is None and index.stop is None:
-                if not isinstance(panes, list):
-                    raise IndexError(
-                        'Expected a list of objects to replace '
-                        f'the objects in the {name}, got a '
-                        f'{type(panes).__name__} type.'
-                    )
-                expected = len(panes)
-                new_objects = [None]*expected # type: ignore
-                self._names = [None]*len(panes)
-                end = expected
-            else:
-                expected = end-start
-                nobjs = len(self.objects)
-                if end > nobjs:
-                    raise IndexError(
-                        f'Index {end} out of bounds on {name} '
-                        'containing {nobjs} objects.'
-                    )
-            if not isinstance(panes, list) or len(panes) != expected:
-                raise IndexError(
-                    f'Expected a list of {expected} objects to set '
-                    f'on the {name} to match the supplied slice.'
-                )
-        for i, pane in zip(range(start, end), panes):
-            new_objects[i], self._names[i] = self._to_object_and_name(pane)
+            new_objects[index], self._names[index] = self._to_objects_and_names(panes)
         self.objects = new_objects
 
     def clone(self, *objects: Any, **params: Any) -> NamedListLike:

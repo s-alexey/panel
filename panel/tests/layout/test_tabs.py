@@ -616,8 +616,8 @@ def test_tabs_setitem_replace_slice_error(document, comm):
     layout.get_root(document, comm=comm)
 
     div3 = Div()
-    with pytest.raises(IndexError):
-        layout[1:] = [div3]
+    layout[1:] = [div3]
+    assert len(layout) == 2
 
 
 def test_tabs_setitem_replace_slice_out_of_bounds(document, comm):
@@ -628,8 +628,8 @@ def test_tabs_setitem_replace_slice_out_of_bounds(document, comm):
     layout.get_root(document, comm=comm)
 
     div3 = Div()
-    with pytest.raises(IndexError):
-        layout[3:4] = [div3]
+    layout[3:4] = [div3]
+    assert len(layout) == 4
 
 
 def test_tabs_pop(document, comm):
