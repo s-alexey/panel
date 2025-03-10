@@ -412,34 +412,10 @@ class ListLike(param.Parameterized):
                     f'Index {end} out of bounds on {name} containing '
                     f'{len(self.objects)} objects.'
                 )
-            panes = [panes]
+            new_objects[index] = panes
         else:
-            start = index.start or 0
-            end = len(self) if index.stop is None else index.stop
-            if index.start is None and index.stop is None:
-                if not isinstance(panes, list):
-                    raise IndexError(
-                        'Expected a list of objects to replace the '
-                        f'objects in the {name}, got a '
-                        f'{type(panes).__name__} type.'
-                    )
-                expected = len(panes)
-                new_objects = [None]*expected # type: ignore
-                end = expected
-            elif end > len(self.objects):
-                raise IndexError(
-                    f'Index {end} out of bounds on {name} containing '
-                    f'{len(self.objects)} objects.'
-                )
-            else:
-                expected = end-start
-            if not isinstance(panes, list) or len(panes) != expected:
-                raise IndexError(
-                    f'Expected a list of {expected} objects to set '
-                    f'on the {name} to match the supplied slice.'
-                )
-        for i, pane in zip(range(start, end), panes):
-            new_objects[i] = pane
+            cls = type(self)
+            new_objects[index] = cls(objects=panes)
 
         self.objects = new_objects
 

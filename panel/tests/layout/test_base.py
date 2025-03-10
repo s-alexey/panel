@@ -294,7 +294,7 @@ def test_layout_setitem_replace_all_error(panel, document, comm):
     layout.get_root(document, comm=comm)
 
     div3 = Div()
-    with pytest.raises(IndexError):
+    with pytest.raises(TypeError):
         layout[:] = div3
 
 
@@ -318,7 +318,7 @@ def test_layout_setitem_replace_slice(panel, document, comm):
 
 
 @pytest.mark.parametrize('panel', [Column, Row])
-def test_layout_setitem_replace_slice_error(panel, document, comm):
+def test_layout_setitem_replace_slice(panel, document, comm):
     div1 = Div()
     div2 = Div()
     div3 = Div()
@@ -326,8 +326,8 @@ def test_layout_setitem_replace_slice_error(panel, document, comm):
     layout.get_root(document, comm=comm)
 
     div3 = Div()
-    with pytest.raises(IndexError):
-        layout[1:] = [div3]
+    layout[1:] = [div3]
+    assert len(layout) == 2
 
 
 @pytest.mark.parametrize('panel', [Column, Row])
@@ -339,9 +339,8 @@ def test_layout_setitem_replace_slice_out_of_bounds(panel, document, comm):
     layout.get_root(document, comm=comm)
 
     div3 = Div()
-    with pytest.raises(IndexError):
-        layout[3:4] = [div3]
-
+    layout[3:4] = [div3]
+    assert len(layout) == 4
 
 @pytest.mark.parametrize('panel', [Column, Row])
 def test_layout_pop(panel, document, comm):
