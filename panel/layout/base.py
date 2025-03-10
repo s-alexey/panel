@@ -404,14 +404,7 @@ class ListLike(param.Parameterized):
 
     def __setitem__(self, index: int | slice, panes: Iterable[Any]) -> None:
         new_objects = list(self)
-        name = type(self).__name__
         if not isinstance(index, slice):
-            start, end = index, index+1
-            if start > len(self.objects):
-                raise IndexError(
-                    f'Index {end} out of bounds on {name} containing '
-                    f'{len(self.objects)} objects.'
-                )
             new_objects[index] = panes
         else:
             cls = type(self)
