@@ -8,7 +8,7 @@ from collections import defaultdict, namedtuple
 from collections.abc import (
     Generator, Iterable, Iterator, Mapping,
 )
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 import param
 
@@ -402,9 +402,15 @@ class ListLike(param.Parameterized):
     def __contains__(self, obj: Viewable) -> bool:
         return obj in self.objects
 
-    def __setitem__(self, index: int | slice, panes: Iterable[Any]) -> None:
+    @overload
+    def __setitem__(self, index: int, panes: Any) -> None: ...
+
+    @overload
+    def __setitem__(self, index: slice, panes: Iterable[Any]) -> None: ...
+
+    def __setitem__(self, index, panes) -> None:
         new_objects = list(self)
-        if not isinstance(index, slice):
+        if isinstance(index, int):
             new_objects[index] = panes
         else:
             cls = type(self)
@@ -631,7 +637,13 @@ class NamedListLike(param.Parameterized):
         objects = list(zip(self._names, self.objects))
         return self.clone(*(added+objects))
 
-    def __setitem__(self, index: int | slice, panes: Iterable[Any]) -> None:
+    @overload
+    def __setitem__(self, index: int, panes: Any) -> None: ...
+
+    @overload
+    def __setitem__(self, index: slice, panes: Iterable[Any]) -> None: ...
+
+    def __setitem__(self, index, panes):
         new_objects = list(self)
         if not isinstance(index, slice):
             new_objects[index], self._names[index] = self._to_object_and_name(panes)
